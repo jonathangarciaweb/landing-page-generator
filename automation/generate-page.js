@@ -12,16 +12,25 @@ async function generateLandingPage() {
     console.log('Iniciando la generación de la landing page...');
 
     try {
-        // 1. Obtener los datos de los productos desde tu API de Express
+        // --- Paso 1: Asegúrate de que el directorio 'dist' existe ---
+        // Se ha movido este código para que se ejecute siempre,
+        // incluso si la llamada a la API falla.
+        const outputDir = path.join(__dirname, 'dist');
+        if (!fs.existsSync(outputDir)) {
+            fs.mkdirSync(outputDir);
+        }
+
+        // 2. Obtener los datos de los productos desde tu API de Express
         console.log('Obteniendo datos de productos desde la API...');
         const response = await fetch(API_URL);
         if (!response.ok) {
+            // Si la API falla, lanzamos un error que será capturado abajo.
             throw new Error(`Error en la respuesta de la API: ${response.statusText}`);
         }
         const products = await response.json();
         console.log(`Datos de ${products.length} productos obtenidos.`);
 
-        // 2. Construir el HTML de las tarjetas dinámicamente
+        // 3. Construir el HTML de las tarjetas dinámicamente
         const cardsHtml = products.map(product => `
             <div class="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden flex flex-col transform hover:-translate-y-1">
                 <div class="relative">
@@ -49,7 +58,7 @@ async function generateLandingPage() {
             </div>
         `).join('');
 
-        // 3. Crear el HTML completo de la página
+        // 4. Crear el HTML completo de la página
         const htmlContent = `
             <!DOCTYPE html>
             <html lang="es">
@@ -83,18 +92,48 @@ async function generateLandingPage() {
             </html>
         `;
 
-        // 4. Guardar el archivo HTML
-        const outputPath = path.join(__dirname, 'dist', 'index.html');
-        // Asegúrate de que el directorio 'dist' existe
-        if (!fs.existsSync(path.join(__dirname, 'dist'))) {
-            fs.mkdirSync(path.join(__dirname, 'dist'));
-        }
+        // 5. Guardar el archivo HTML
+        const outputPath = path.join(outputDir, 'index.html');
         fs.writeFileSync(outputPath, htmlContent, 'utf-8');
 
         console.log(`🎉 ¡Página de destino generada con éxito en ${outputPath}!`);
 
     } catch (error) {
+        // En caso de que la API falle, se puede generar una página de error estática
+        // para que Netlify tenga algo que desplegar.
         console.error('🚨 Error al generar la landing page:', error);
+        
+        const errorHtmlContent = `
+            <!DOCTYPE html>
+            <html lang="es">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Error</title>
+                <script src="https://cdn.tailwindcss.com"></script>
+                <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+                <style>
+                    body {
+                        font-family: 'Inter', sans-serif;
+                    }
+                </style>
+            </head>
+            <body class="bg-gray-100 p-8 flex items-center justify-center h-screen">
+                <div class="text-center">
+                    <h1 class="text-4xl font-extrabold text-red-600 mb-4">¡Oops! Algo salió mal.</h1>
+                    <p class="text-lg text-gray-600">No pudimos obtener los productos de la base de datos.</p>
+                    <p class="text-sm text-gray-500 mt-2">Error: ${error.message}</p>
+                </div>
+            </body>
+            </html>
+        `;
+        const outputPath = path.join(__dirname, 'dist', 'index.html');
+        // Asegúrate de que el directorio 'dist' existe antes de intentar escribir el archivo de error.
+        fs.mkdirSync(path.join(__dirname, 'dist'), { recursive: true });
+        fs.writeFileSync(outputPath, errorHtmlContent, 'utf-8');
+        
+        console.log(`🚨 Se ha generado una página de error estática en ${outputPath}.`);
+        process.exit(1); // Finaliza el proceso con un código de error para Netlify
     }
 }
 
