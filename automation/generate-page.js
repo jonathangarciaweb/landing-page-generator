@@ -13,7 +13,7 @@ async function generateLandingPage() {
     let errorMessage = '';
 
     // --- Paso 1: Asegúrate de que el directorio 'dist' existe ---
-    // Este código se ejecuta siempre.
+    // Este código se ejecuta siempre, garantizando que Netlify siempre encuentre el directorio.
     const outputDir = path.join(__dirname, 'dist');
     if (!fs.existsSync(outputDir)) {
         fs.mkdirSync(outputDir, { recursive: true });
