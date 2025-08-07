@@ -1,0 +1,13 @@
+# Ignorar archivos de configuración de entorno
+.env
+
+# Ignorar directorios de documentación o historial
+0historialConversacion/
+0landin_ejemplo/
+0USUARIOS Y CREDENCIALES/
+
+# Ignorar dependencias de Node.js
+backend/node_modules/
+
+# Ignorar el archivo README.md, aunque es una práctica poco común
+README.md
