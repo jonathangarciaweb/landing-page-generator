@@ -5,7 +5,7 @@ const fetch = require('node-fetch');
 
 // URL de tu backend de Express desplegado en Render.
 // O usa http://localhost:3000 si lo estás probando localmente.
-const API_URL = 'https://tu-backend-en-render.onrender.com/api/productos';
+const API_URL = 'https://landing-page-api-cftl.onrender.com/api/productos';
 
 // Función para generar y guardar el archivo HTML
 async function generateLandingPage() {
