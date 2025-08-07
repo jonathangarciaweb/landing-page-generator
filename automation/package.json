@@ -1,0 +1,12 @@
+{
+  "name": "automation-script",
+  "version": "1.0.0",
+  "description": "Script to generate static landing page from an API.",
+  "main": "generate-page.js",
+  "scripts": {
+    "start": "node generate-page.js"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.1"
+  }
+}
